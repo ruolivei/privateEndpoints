@@ -1,0 +1,21 @@
+# connect on Azure subscription
+Connect-AzAccount
+
+# see your subscriptions available
+get-azsubscription
+
+# set your right subscription
+get-azsubscription -SubscriptionName "Visual Studio Enterprise com MSDN"
+
+# you will have to work on the subscription that contains the storage account
+# list vnets rules
+(Get-AzStorageAccountNetworkRuleSet -ResourceGroupName "msdnfilesharetests" -AccountName "msdnfileadds").VirtualNetworkRules
+
+#Enable service endpoint for Azure Storage on an existing virtual network and subnet. ((( this step can be done through az portal as I did )))
+Get-AzVirtualNetwork -ResourceGroupName "myresourcegroup" -Name "myvnet" | Set-AzVirtualNetworkSubnetConfig -Name "mysubnet" -AddressPrefix "10.0.0.0/24" -ServiceEndpoint "Microsoft.Storage" | Set-AzVirtualNetwork
+
+#Add a network rule for a virtual network and subnet
+#$subnet = Get-AzVirtualNetwork -ResourceGroupName "myresourcegroup" -Name "myvnet" | Get-AzVirtualNetworkSubnetConfig -Name "mysubnet"
+Add-AzStorageAccountNetworkRule -ResourceGroupName "msdnfilesharetests" -Name "msdnfileadds" -VirtualNetworkResourceId "/subscriptions/0ca3a1b3-f9c8-44e0-92e5-1ea2e6f5138b/resourceGroups/mycfiles/providers/Microsoft.Network/virtualNetworks/mycfiles-vnet/subnets/default"
+
+
